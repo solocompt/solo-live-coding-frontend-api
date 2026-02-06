@@ -4,7 +4,19 @@
 
 type AuthResponse {
   accessToken: String!
+  refreshToken: String!
   user: User!
+}
+
+input CreateTodoInput {
+  """The content of the todo"""
+  content: String!
+
+  """Expiration date of the todo"""
+  expiresAt: DateTime
+
+  """ID of the user to assign the todo to"""
+  userId: String
 }
 
 """
@@ -18,15 +30,21 @@ input LoginInput {
 }
 
 type Mutation {
+  createTodo(createTodoInput: CreateTodoInput!): Todo!
   deleteAccount: User!
   login(loginInput: LoginInput!): AuthResponse!
   logout: Boolean!
+  refreshTokens: AuthResponse!
+  removeTodo(id: String!): Boolean!
   signup(signupInput: SignupInput!): AuthResponse!
   updateProfile(updateUserInput: UpdateUserInput!): User!
+  updateTodo(updateTodoInput: UpdateTodoInput!): Todo!
 }
 
 type Query {
   me: User!
+  todo(id: String!): Todo!
+  todos: [Todo!]!
   user(id: String!): User!
   users: [User!]!
 }
@@ -35,6 +53,45 @@ input SignupInput {
   email: String!
   name: String!
   password: String!
+}
+
+type Todo {
+  """Todo content"""
+  content: String!
+  createdAt: DateTime!
+
+  """Expiration date"""
+  expiresAt: DateTime
+
+  """Todo id"""
+  id: String!
+
+  """Is todo completed"""
+  isCompleted: Boolean!
+  updatedAt: DateTime!
+
+  """Owner of the todo"""
+  user: User!
+
+  """User ID"""
+  userId: String!
+}
+
+input UpdateTodoInput {
+  """The content of the todo"""
+  content: String
+
+  """Expiration date of the todo"""
+  expiresAt: DateTime
+
+  """The id of the todo"""
+  id: String!
+
+  """Mark as completed or not"""
+  isCompleted: Boolean
+
+  """ID of the user to assign the todo to"""
+  userId: String
 }
 
 input UpdateUserInput {
@@ -60,5 +117,6 @@ type User {
 
   """User name"""
   name: String!
+  todos: [Todo!]
   updatedAt: DateTime!
 }
