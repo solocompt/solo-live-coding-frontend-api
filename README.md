@@ -45,9 +45,9 @@ A API expõe as seguintes funcionalidades através de um endpoint GraphQL:
 - **Paginação**: Listagem paginada para grandes volumes de dados.
 - **Segurança**: Apenas o dono da tarefa (ou quem a criou) pode vê-la ou editá-la.
 
-## Como Iniciar o Projeto
+## Configuração e Instalação
 
-Siga os passos abaixo para colocar a API a correr no seu ambiente local.
+Siga os passos abaixo para colocar a API a correr, seja num ambiente local para avaliação ou num servidor de testes/staging.
 
 ### Pré-requisitos
 
@@ -77,10 +77,19 @@ npm run migration:run
 
 ### Executar a Aplicação
 
-Para iniciar o servidor em modo de desenvolvimento:
+**Modo Desenvolvimento (Local):**
+Para iniciar o servidor com hot-reload para testes rápidos:
 
 ```bash
 npm run start:dev
+```
+
+**Modo Produção (Servidor):**
+Para executar num servidor de testes ou ambiente estável:
+
+```bash
+npm run build
+npm run start:prod
 ```
 
 A aplicação ficará disponível em `http://localhost:3000`.
