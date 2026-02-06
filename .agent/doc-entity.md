@@ -21,37 +21,44 @@ Entities define both the database schema (via TypeORM) and the GraphQL object ty
 Based on `src/users/entities/user.entity.ts`:
 
 ```typescript
-import { ObjectType, Field, Int } from "@nestjs/graphql"; // GraphQL decorators
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"; // TypeORM decorators
+import { ObjectType, Field, Int } from '@nestjs/graphql'; // GraphQL decorators
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Index,
+} from 'typeorm'; // TypeORM decorators
 // Import related entities if needed
-import { Session } from "../../auth/entities/sessions.entity";
+import { Session } from '../../auth/entities/sessions.entity';
 
 @ObjectType() // Marks class as a GraphQL Object Type
-@Entity("users") // Defines the database table name
+@Entity('users') // Defines the database table name
 export class User {
   // 1. Primary Key (UUID)
-  @PrimaryGeneratedColumn("uuid")
-  @Field(() => String, { description: "User id" })
+  @PrimaryGeneratedColumn('uuid')
+  @Field(() => String, { description: 'User id' })
   id: string;
 
   // 2. Standard Column
-  @Column("varchar", { length: 100 })
-  @Field(() => String, { description: "User name", nullable: false })
+  @Column('varchar', { length: 100 })
+  @Field(() => String, { description: 'User name', nullable: false })
   name: string;
 
   // 3. Nullable Column
-  @Column("varchar", { length: 100, nullable: true })
-  @Field(() => String, { description: "User surname" }) // GraphQL field is implicitly nullable if typescript type is optional or if nullable: true is set (though here it's just omitted which usually means nullable in GQL if not strictly controlled)
+  @Column('varchar', { length: 100, nullable: true })
+  @Field(() => String, { description: 'User surname' }) // GraphQL field is implicitly nullable if typescript type is optional or if nullable: true is set (though here it's just omitted which usually means nullable in GQL if not strictly controlled)
   surname: string;
 
-  // 4. Unique Column
-  @Column("varchar", { length: 100, unique: true })
-  @Field(() => String, { description: "User email" })
+  // 4. Unique Column & Index
+  @Column('varchar', { length: 100, unique: true })
+  @Index('IDX_USER_EMAIL') // Explicit index for faster lookups
+  @Field(() => String, { description: 'User email' })
   email: string;
 
   // 5. Internal Column (Not exposed to GraphQL)
   // Note: No @Field decorator here, so it won't appear in the API
-  @Column("varchar", { length: 255 })
+  @Column('varchar', { length: 255 })
   password: string;
 
   // 6. Relationships
@@ -69,6 +76,7 @@ export class User {
 | **ID**     | `@PrimaryGeneratedColumn('uuid')` | Generates a UUID primary key.                                                   |
 | **Field**  | `@Field(() => Type, options)`     | Exposes a property to GraphQL. `options` include `{ description, nullable }`.   |
 | **Column** | `@Column(type, options)`          | Defines a DB column. `options` include `{ length, unique, nullable, default }`. |
+| **Index**  | `@Index('index_name')`            | Creates a database index for performance. Mandatory for searchable fields.      |
 
 ### Enums
 

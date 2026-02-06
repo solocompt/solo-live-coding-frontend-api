@@ -88,6 +88,41 @@ export class UpdateUserInput extends PartialType(RegisterAuthInput) {
 }
 ```
 
+#### 3. Auth DTOs (Login/Signup)
+
+```typescript
+import { InputType, Field } from '@nestjs/graphql';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+
+@InputType()
+export class LoginInput {
+  @Field()
+  @IsEmail()
+  email: string;
+
+  @Field()
+  @IsNotEmpty()
+  password: string;
+}
+
+@InputType()
+export class SignupInput {
+  @Field()
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @Field()
+  @IsEmail()
+  email: string;
+
+  @Field()
+  @IsNotEmpty()
+  @MinLength(6)
+  password: string;
+}
+```
+
 ### Common Validators
 
 | Decorator         | Usage                                                     | Example Message                                 |

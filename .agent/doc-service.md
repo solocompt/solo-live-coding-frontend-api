@@ -10,9 +10,10 @@ Services are NestJS providers marked with `@Injectable()`. They isolate business
 
 1.  **Dependency Injection**: Use `@Injectable()` and inject TypeORM repositories.
 2.  **Repositories**: Use `@InjectRepository(Entity)` to access database operations.
-3.  **Business Logic**: Handle calculations, password hashing (`bcrypt`), and data transformations here.
-4.  **Error Handling**: Throw standard exceptions (e.g., `Error`, `UnauthorizedException`) which GraphQL will format.
-5.  **Inline Comments**: Mandatory inline comments in functions and methods to clarify complex logic or important steps.
+3.  **Strict Typing**: NEVER use `any` type for method arguments, especially for update data. ALWAYS use the specific DTO (e.g., `UpdateUserInput`) to ensure type safety and validation.
+4.  **Business Logic**: Handle calculations, password hashing (`bcrypt`), and data transformations here.
+5.  **Error Handling**: Throw standard exceptions (e.g., `Error`, `UnauthorizedException`) which GraphQL will format.
+6.  **Inline Comments**: Mandatory inline comments in functions and methods to clarify complex logic or important steps.
 
 ### Example Implementation
 
