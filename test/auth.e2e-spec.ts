@@ -34,6 +34,7 @@ describe('Auth Integration (pg-mem)', () => {
       implementation: () => 'test',
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const ds: DataSource = await db.adapters.createTypeormDataSource({
       type: 'postgres',
       entities: [User],
@@ -46,6 +47,7 @@ describe('Auth Integration (pg-mem)', () => {
         ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }),
         TypeOrmModule.forRootAsync({
           useFactory: () => ({}),
+          // eslint-disable-next-line @typescript-eslint/require-await
           dataSourceFactory: async () => ds,
         }),
         UsersModule,
