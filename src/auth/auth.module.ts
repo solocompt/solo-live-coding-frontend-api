@@ -6,9 +6,14 @@ import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
+
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { InvalidToken } from './entities/invalid-token.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([InvalidToken]),
     UsersModule,
     PassportModule,
     JwtModule.registerAsync({
@@ -16,11 +21,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1d' },
+        signOptions: { expiresIn: '15m' }, // Access token short lived
       }),
     }),
   ],
-  providers: [AuthService, AuthResolver, JwtStrategy],
+  providers: [AuthService, AuthResolver, JwtStrategy, RefreshTokenStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

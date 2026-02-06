@@ -1,10 +1,12 @@
-import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Query, Context } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { AuthResponse } from './dto/auth-response';
 import { LoginInput } from './dto/login.input';
 import { SignupInput } from './dto/signup.input';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
 
@@ -22,6 +24,25 @@ export class AuthResolver {
   @Mutation(() => AuthResponse)
   signup(@Args('signupInput') signupInput: SignupInput) {
     return this.authService.signup(signupInput);
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(JwtAuthGuard)
+  async logout(
+    @Context() context: { req: Request },
+    @CurrentUser() user: User,
+  ) {
+    const token = context.req.headers.authorization?.split(' ')[1];
+    if (token) {
+      return this.authService.logout(user.id, token);
+    }
+    return false;
+  }
+
+  @Mutation(() => AuthResponse)
+  @UseGuards(RefreshTokenGuard)
+  async refreshTokens(@CurrentUser() user: User & { refreshToken: string }) {
+    return this.authService.refreshTokens(user.id, user.refreshToken);
   }
 
   @Mutation(() => User)
