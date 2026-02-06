@@ -72,7 +72,7 @@ export class AuthService {
     await this.invalidTokenRepository.save(invalidToken);
 
     // Clear refresh token from user
-    await this.usersService.update(userId, { currentHashedRefreshToken: null });
+    await this.usersService.update(userId, { id: userId, currentHashedRefreshToken: null });
 
     return true;
   }
@@ -82,11 +82,11 @@ export class AuthService {
       where: { token },
     });
     return !!invalidToken;
-  }
+  } 
 
   async updateRefreshToken(userId: string, refreshToken: string) {
     const hash = await bcrypt.hash(refreshToken, 10);
-    await this.usersService.update(userId, { currentHashedRefreshToken: hash });
+    await this.usersService.update(userId, { id: userId, currentHashedRefreshToken: hash });
   }
 
   async getTokens(userId: string, email: string) {
@@ -151,6 +151,6 @@ export class AuthService {
   }
 
   async deleteAccount(userId: string): Promise<User> {
-    return this.usersService.remove(userId);
+    return this.usersService.remove({ id: userId }  );
   }
 }
