@@ -9,4 +9,3 @@ export class UpdateUserInput extends PartialType(CreateUserInput) {
   @IsNotEmpty()
   id: string;
 }
-
