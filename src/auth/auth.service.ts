@@ -151,6 +151,6 @@ export class AuthService {
   }
 
   async deleteAccount(userId: string): Promise<User> {
-    return this.usersService.remove({ id: userId }  );
+    return this.usersService.remove(userId);
   }
 }
