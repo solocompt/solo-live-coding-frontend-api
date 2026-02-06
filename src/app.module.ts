@@ -16,9 +16,10 @@ import { AuthModule } from './auth/auth.module';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       useFactory: (configService: ConfigService) => ({
         type: 'sqlite',
-        database: 'database.sqlite',
+        database: 'src/database/database.sqlite',
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: false, // Set to false to use migrations
         logging: true,

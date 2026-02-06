@@ -1,16 +1,17 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:14
+  app:
+    build: .
     ports:
-      - 5432:5432
+      - 3000:3000
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: app_db
+      NODE_ENV: production
+      DB_HOST: localhost
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - sqlite_data:/usr/src/app/src/database
+    command: npm run start:prod
 
 volumes:
-  postgres_data:
+  sqlite_data:
+
