@@ -6,6 +6,9 @@ import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 
+import { PaginationArgs } from '../common/dto/pagination.args';
+import { IPaginatedType } from '../common/dto/paginated.type';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -22,8 +25,17 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  async findAll(paginationArgs: PaginationArgs): Promise<IPaginatedType<User>> {
+    const [items, total] = await this.usersRepository.findAndCount({
+      skip: paginationArgs.skip,
+      take: paginationArgs.take,
+    });
+
+    return {
+      items,
+      total,
+      hasNextPage: paginationArgs.skip + paginationArgs.take < total,
+    };
   }
 
   async findOne(id: string): Promise<User> {

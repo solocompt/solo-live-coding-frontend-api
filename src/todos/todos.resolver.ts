@@ -7,15 +7,20 @@ import { UpdateTodoInput } from './dto/update-todo.input';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
+import { PaginatedTodo } from './dto/paginated-todo.object';
+import { PaginationArgs } from '../common/dto/pagination.args';
 
 @Resolver(() => Todo)
 export class TodosResolver {
   constructor(private readonly todosService: TodosService) {}
 
-  @Query(() => [Todo], { name: 'todos' })
+  @Query(() => PaginatedTodo, { name: 'todos' })
   @UseGuards(JwtAuthGuard)
-  async findAll(@CurrentUser() user: User) {
-    return this.todosService.findAll(user);
+  async findAll(
+    @CurrentUser() user: User,
+    @Args() paginationArgs: PaginationArgs,
+  ) {
+    return this.todosService.findAll(user, paginationArgs);
   }
 
   @Query(() => Todo, { name: 'todo' })

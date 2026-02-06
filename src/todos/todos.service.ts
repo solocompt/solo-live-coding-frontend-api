@@ -6,6 +6,8 @@ import { CreateTodoInput } from './dto/create-todo.input';
 import { UpdateTodoInput } from './dto/update-todo.input';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
+import { PaginationArgs } from '../common/dto/pagination.args';
+import { IPaginatedType } from '../common/dto/paginated.type';
 
 @Injectable()
 export class TodosService {
@@ -34,11 +36,19 @@ export class TodosService {
   }
 
   // Find All for a user
-  async findAll(user: User): Promise<Todo[]> {
-    return this.todosRepository.find({
+  async findAll(user: User, paginationArgs: PaginationArgs): Promise<IPaginatedType<Todo>> {
+    const [items, total] = await this.todosRepository.findAndCount({
       where: { userId: user.id },
       order: { createdAt: 'DESC' },
+      skip: paginationArgs.skip,
+      take: paginationArgs.take,
     });
+
+    return {
+      items,
+      total,
+      hasNextPage: paginationArgs.skip + paginationArgs.take < total,
+    };
   }
 
   // Find One
