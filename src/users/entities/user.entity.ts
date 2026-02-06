@@ -1,5 +1,11 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @ObjectType()
 @Entity('users')
@@ -19,6 +25,9 @@ export class User {
   @Column('varchar', { length: 255 })
   // No @Field decorator here, password should not be exposed via GraphQL
   password: string;
+
+  @Column({ nullable: true })
+  currentHashedRefreshToken?: string;
 
   @CreateDateColumn()
   @Field(() => Date)
