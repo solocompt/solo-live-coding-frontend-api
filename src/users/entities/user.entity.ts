@@ -5,7 +5,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Todo } from '../../todos/entities/todo.entity';
 
 @ObjectType()
 @Entity('users')
@@ -36,4 +38,8 @@ export class User {
   @UpdateDateColumn()
   @Field(() => Date)
   updatedAt: Date;
+
+  @OneToMany(() => Todo, (todo) => todo.user)
+  @Field(() => [Todo], { nullable: true })
+  todos: Todo[];
 }
