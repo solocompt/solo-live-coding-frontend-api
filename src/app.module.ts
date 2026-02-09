@@ -19,6 +19,9 @@ import { TodosModule } from './todos/todos.module';
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public'),
       serveRoot: '/public',
+      serveStaticOptions: {
+        index: false,
+      },
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
