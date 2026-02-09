@@ -54,6 +54,10 @@ export class AuthService {
   }
 
   async signup(signupInput: SignupInput): Promise<AuthResponse> {
+    const existingUser = await this.usersService.findOneByEmail(signupInput.email);
+    if (existingUser) {
+      throw new BadRequestException('Email already in use');
+    }
     const user = await this.usersService.create(signupInput);
     const { accessToken, refreshToken } = await this.getTokens(
       user.id,
