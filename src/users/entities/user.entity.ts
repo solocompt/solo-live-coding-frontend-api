@@ -1,4 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
@@ -26,9 +27,13 @@ export class User {
 
   @Column('varchar', { length: 255 })
   // No @Field decorator here, password should not be exposed via GraphQL
+  // @Exclude() decorator ensures this field is never returned in REST API responses (JSON)
+  @Exclude()
   password: string;
 
   @Column({ nullable: true })
+  // @Exclude() decorator ensures this field is never returned in REST API responses (JSON)
+  @Exclude()
   currentHashedRefreshToken?: string;
 
   @CreateDateColumn()

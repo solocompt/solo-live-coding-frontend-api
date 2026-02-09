@@ -7,6 +7,7 @@ import { AuthResolver } from './auth.resolver';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
+import { AuthController } from './auth.controller';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InvalidToken } from './entities/invalid-token.entity';
@@ -25,6 +26,7 @@ import { InvalidToken } from './entities/invalid-token.entity';
       }),
     }),
   ],
+  controllers: [AuthController],
   providers: [AuthService, AuthResolver, JwtStrategy, RefreshTokenStrategy],
   exports: [AuthService],
 })

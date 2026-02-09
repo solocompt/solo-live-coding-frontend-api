@@ -1,13 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { newDb } from 'pg-mem';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 import { DataSource } from 'typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AuthResolver } from '../src/auth/auth.resolver';
 import { UsersModule } from '../src/users/users.module';
 import { AuthModule } from '../src/auth/auth.module';
 import { User } from '../src/users/entities/user.entity';
+import { Todo } from '../src/todos/entities/todo.entity';
+
+// Simple UUID v4 generator for testing
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 
 describe('Auth Integration (pg-mem)', () => {
   let resolver: AuthResolver;
@@ -37,7 +47,7 @@ describe('Auth Integration (pg-mem)', () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const ds: DataSource = await db.adapters.createTypeormDataSource({
       type: 'postgres',
-      entities: [User],
+      entities: [User, Todo],
       synchronize: true,
     });
     await ds.initialize();
