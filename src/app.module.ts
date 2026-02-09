@@ -9,6 +9,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TodosModule } from './todos/todos.module';
+import { DocsModule } from './docs/docs.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { TodosModule } from './todos/todos.module';
     UsersModule,
     AuthModule,
     TodosModule,
+    DocsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,15 +1,19 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PaginationArgs } from '../common/dto/pagination.args';
 import { User } from './entities/user.entity';
 import { IPaginatedType } from '../common/dto/paginated.type';
 
+@ApiTags('Users')
+@ApiBearerAuth()
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({ summary: 'Get all users with pagination' })
   @Get()
   findAll(
     @Query() paginationArgs: PaginationArgs,
@@ -21,6 +25,8 @@ export class UsersController {
     return this.usersService.findAll(paginationArgs);
   }
 
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiParam({ name: 'id', description: 'User UUID' })
   @Get(':id')
   findOne(@Param('id') id: string): Promise<User> {
     return this.usersService.findOne(id);

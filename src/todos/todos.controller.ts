@@ -11,6 +11,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { TodosService } from './todos.service';
 import { CreateTodoInput } from './dto/create-todo.input';
 import { UpdateTodoInput } from './dto/update-todo.input';
@@ -21,11 +22,14 @@ import { PaginationArgs } from '../common/dto/pagination.args';
 import { Todo } from './entities/todo.entity';
 import { IPaginatedType } from '../common/dto/paginated.type';
 
+@ApiTags('Todos')
+@ApiBearerAuth()
 @Controller('todos')
 @UseGuards(JwtAuthGuard)
 export class TodosController {
   constructor(private readonly todosService: TodosService) {}
 
+  @ApiOperation({ summary: 'Create a new todo' })
   @Post()
   create(
     @Body() createTodoInput: CreateTodoInput,
@@ -34,6 +38,7 @@ export class TodosController {
     return this.todosService.create(createTodoInput, user);
   }
 
+  @ApiOperation({ summary: 'Get all todos for current user' })
   @Get()
   findAll(
     @CurrentUser() user: User,
@@ -46,6 +51,8 @@ export class TodosController {
     return this.todosService.findAll(user, paginationArgs);
   }
 
+  @ApiOperation({ summary: 'Get todo by ID' })
+  @ApiParam({ name: 'id', description: 'Todo UUID' })
   @Get(':id')
   findOne(
     @Param('id') id: string,
@@ -54,6 +61,8 @@ export class TodosController {
     return this.todosService.findOne(id, user);
   }
 
+  @ApiOperation({ summary: 'Update todo by ID' })
+  @ApiParam({ name: 'id', description: 'Todo UUID' })
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -65,6 +74,8 @@ export class TodosController {
     return this.todosService.update(id, updateTodoInput, user);
   }
 
+  @ApiOperation({ summary: 'Delete todo by ID' })
+  @ApiParam({ name: 'id', description: 'Todo UUID' })
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async remove(
