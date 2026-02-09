@@ -3,18 +3,22 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TodosModule } from './todos/todos.module';
-import { DocsModule } from './docs/docs.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'public'),
+      serveRoot: '/public',
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -38,7 +42,6 @@ import { DocsModule } from './docs/docs.module';
     UsersModule,
     AuthModule,
     TodosModule,
-    DocsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
