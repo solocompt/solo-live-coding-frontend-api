@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateTodoInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 let CreateTodoInput = class CreateTodoInput {
     content;
@@ -19,18 +20,21 @@ let CreateTodoInput = class CreateTodoInput {
 };
 exports.CreateTodoInput = CreateTodoInput;
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: 'The content of the todo', example: 'Buy groceries' }),
     (0, graphql_1.Field)(() => String, { description: 'The content of the todo' }),
     (0, class_validator_1.IsString)({ message: 'Content must be a string' }),
     (0, class_validator_1.IsNotEmpty)({ message: 'Content is required' }),
     __metadata("design:type", String)
 ], CreateTodoInput.prototype, "content", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Expiration date of the todo', example: '2024-12-31T23:59:59Z' }),
     (0, graphql_1.Field)(() => Date, { nullable: true, description: 'Expiration date of the todo' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsDate)({ message: 'ExpiresAt must be a valid date' }),
     __metadata("design:type", Date)
 ], CreateTodoInput.prototype, "expiresAt", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'ID of the user to assign the todo to' }),
     (0, graphql_1.Field)(() => String, { nullable: true, description: 'ID of the user to assign the todo to' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsUUID)('4', { message: 'UserId must be a valid UUID' }),

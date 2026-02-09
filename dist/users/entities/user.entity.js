@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const class_transformer_1 = require("class-transformer");
 const typeorm_1 = require("typeorm");
 const todo_entity_1 = require("../../todos/entities/todo.entity");
 let User = class User {
@@ -41,10 +42,12 @@ __decorate([
 ], User.prototype, "email", void 0);
 __decorate([
     (0, typeorm_1.Column)('varchar', { length: 255 }),
+    (0, class_transformer_1.Exclude)(),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
+    (0, class_transformer_1.Exclude)(),
     __metadata("design:type", String)
 ], User.prototype, "currentHashedRefreshToken", void 0);
 __decorate([

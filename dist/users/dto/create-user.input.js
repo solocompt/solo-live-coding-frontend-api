@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateUserInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 let CreateUserInput = class CreateUserInput {
     name;
@@ -19,18 +20,21 @@ let CreateUserInput = class CreateUserInput {
 };
 exports.CreateUserInput = CreateUserInput;
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: 'User name', example: 'John Doe' }),
     (0, graphql_1.Field)(() => String, { description: 'User name' }),
     (0, class_validator_1.IsString)({ message: 'Name must be a string' }),
     (0, class_validator_1.IsNotEmpty)({ message: 'Name is required' }),
     __metadata("design:type", String)
 ], CreateUserInput.prototype, "name", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: 'User email', example: 'john@example.com' }),
     (0, graphql_1.Field)(() => String, { description: 'User email' }),
     (0, class_validator_1.IsEmail)({}, { message: 'Please provide a valid email address' }),
     (0, class_validator_1.IsNotEmpty)({ message: 'Email is required' }),
     __metadata("design:type", String)
 ], CreateUserInput.prototype, "email", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: 'User password', example: 'strongPassword123' }),
     (0, graphql_1.Field)(() => String, { description: 'User password' }),
     (0, class_validator_1.IsString)({ message: 'Password must be a string' }),
     (0, class_validator_1.MinLength)(6, { message: 'Password must be at least 6 characters long' }),

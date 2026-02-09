@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoginInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 let LoginInput = class LoginInput {
     email;
@@ -18,11 +19,13 @@ let LoginInput = class LoginInput {
 };
 exports.LoginInput = LoginInput;
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: 'user@example.com', description: 'User email' }),
     (0, graphql_1.Field)(),
     (0, class_validator_1.IsEmail)(),
     __metadata("design:type", String)
 ], LoginInput.prototype, "email", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: 'password123', description: 'User password (min 6 chars)' }),
     (0, graphql_1.Field)(),
     (0, class_validator_1.MinLength)(6),
     __metadata("design:type", String)

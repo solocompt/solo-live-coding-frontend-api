@@ -22,13 +22,15 @@ const update_todo_input_1 = require("./dto/update-todo.input");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const current_user_decorator_1 = require("../auth/decorators/current-user.decorator");
 const user_entity_1 = require("../users/entities/user.entity");
+const paginated_todo_object_1 = require("./dto/paginated-todo.object");
+const pagination_args_1 = require("../common/dto/pagination.args");
 let TodosResolver = class TodosResolver {
     todosService;
     constructor(todosService) {
         this.todosService = todosService;
     }
-    async findAll(user) {
-        return this.todosService.findAll(user);
+    async findAll(user, paginationArgs) {
+        return this.todosService.findAll(user, paginationArgs);
     }
     async findOne(id, user) {
         return this.todosService.findOne(id, user);
@@ -45,11 +47,13 @@ let TodosResolver = class TodosResolver {
 };
 exports.TodosResolver = TodosResolver;
 __decorate([
-    (0, graphql_1.Query)(() => [todo_entity_1.Todo], { name: 'todos' }),
+    (0, graphql_1.Query)(() => paginated_todo_object_1.PaginatedTodo, { name: 'todos' }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User]),
+    __metadata("design:paramtypes", [user_entity_1.User,
+        pagination_args_1.PaginationArgs]),
     __metadata("design:returntype", Promise)
 ], TodosResolver.prototype, "findAll", null);
 __decorate([

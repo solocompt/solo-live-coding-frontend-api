@@ -4,18 +4,9 @@ import { Reflector } from '@nestjs/core';
 import request from 'supertest';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { newDb } from 'pg-mem';
-// import { v4 as uuidv4 } from 'uuid';
+import { randomUUID as uuidv4 } from 'crypto';
 import { DataSource } from 'typeorm';
 import { ConfigModule } from '@nestjs/config';
-
-// Simple UUID v4 generator for testing
-function uuidv4() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
 
 import { AuthModule } from '../src/auth/auth.module';
 import { UsersModule } from '../src/users/users.module';
@@ -25,16 +16,16 @@ import { Todo } from '../src/todos/entities/todo.entity';
 
 describe('Auth REST (e2e)', () => {
   let app: INestApplication;
-  let dataSource: DataSource;
+  let db: any;
 
-  beforeAll(async () => {
-    process.env.JWT_SECRET = 'test-secret';
-    process.env.JWT_REFRESH_SECRET = 'test-refresh-secret';
+  beforeEach(async () => {
+    db = newDb({
+        autoCreateForeignKeyIndices: true,
+    });
 
-    const db = newDb();
     db.public.registerFunction({
         name: 'uuid_generate_v4',
-        implementation: uuidv4,
+        implementation: () => uuidv4(),
     });
     db.public.registerFunction({
         name: 'version',
@@ -45,36 +36,49 @@ describe('Auth REST (e2e)', () => {
         implementation: () => 'test',
     });
 
-    const ds: DataSource = await db.adapters.createTypeormDataSource({
+    const ds = await db.adapters.createTypeormDataSource({
         type: 'postgres',
         entities: [User, InvalidToken, Todo],
-        synchronize: true,
     });
     await ds.initialize();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }),
+        ConfigModule.forRoot({
+            isGlobal: true,
+            load: [() => ({
+                JWT_SECRET: 'test-secret',
+                JWT_EXPIRATION: '15m',
+                JWT_REFRESH_SECRET: 'test-refresh-secret',
+                JWT_REFRESH_EXPIRATION: '7d',
+            })],
+        }),
         TypeOrmModule.forRootAsync({
             useFactory: () => ({}),
-            // eslint-disable-next-line @typescript-eslint/require-await
             dataSourceFactory: async () => ds,
         }),
         AuthModule,
         UsersModule,
       ],
-    }).compile();
+    })
+    .overrideProvider(DataSource)
+    .useValue(ds)
+    .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }));
     app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
     await app.init();
-    dataSource = ds;
+    
+    await ds.synchronize();
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
-    if (dataSource?.isInitialized) await dataSource.destroy();
   });
 
   it('/auth/signup (POST)', async () => {
@@ -95,34 +99,95 @@ describe('Auth REST (e2e)', () => {
     expect(response.body.user).not.toHaveProperty('currentHashedRefreshToken');
   });
 
+  it('/auth/signup (POST) - validation error', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        name: '', // Invalid: empty
+        email: 'invalid-email', // Invalid: not an email
+        password: '123', // Invalid: too short (assuming min length)
+      })
+      .expect(400);
+
+    expect(response.body).toHaveProperty('statusCode', 400);
+    expect(response.body).toHaveProperty('message');
+    expect(Array.isArray(response.body.message)).toBe(true);
+  });
+
+  it('/auth/signup (POST) - duplicate email', async () => {
+    // First create a user
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        name: 'Duplicate Test',
+        email: 'duplicate@test.com',
+        password: 'password123',
+      })
+      .expect(201);
+
+    // Try to create the same user again
+    const response = await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        name: 'Duplicate Test 2',
+        email: 'duplicate@test.com',
+        password: 'password123',
+      })
+      .expect(400);
+
+    expect(response.body).toHaveProperty('statusCode', 400);
+    expect(response.body).toHaveProperty('message', 'Email already in use');
+  });
+
   it('/auth/login (POST)', async () => {
+    // Create user first
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        name: 'Login Test',
+        email: 'login@test.com',
+        password: 'password123',
+      })
+      .expect(201);
+
     const response = await request(app.getHttpServer())
       .post('/auth/login')
       .send({
-        email: 'rest@test.com',
+        email: 'login@test.com',
         password: 'password123',
       })
       .expect(200);
 
     expect(response.body).toHaveProperty('accessToken');
-    expect(response.body.user).toHaveProperty('email', 'rest@test.com');
+    expect(response.body.user).toHaveProperty('email', 'login@test.com');
   });
 
   it('/auth/me (GET)', async () => {
-     // First login to get token
-     const loginRes = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: 'rest@test.com',
+    // Create user and get token
+    await request(app.getHttpServer())
+        .post('/auth/signup')
+        .send({
+        name: 'Me Test',
+        email: 'me@test.com',
         password: 'password123',
-      });
-    const token = loginRes.body.accessToken;
+        })
+        .expect(201);
+
+    const loginResponse = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({
+        email: 'me@test.com',
+        password: 'password123',
+        })
+        .expect(200);
+    
+    const myToken = loginResponse.body.accessToken;
 
     const response = await request(app.getHttpServer())
       .get('/auth/me')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${myToken}`)
       .expect(200);
     
-    expect(response.body).toHaveProperty('email', 'rest@test.com');
+    expect(response.body).toHaveProperty('email', 'me@test.com');
   });
 });

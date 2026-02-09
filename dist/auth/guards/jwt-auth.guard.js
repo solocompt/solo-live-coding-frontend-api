@@ -12,6 +12,9 @@ const graphql_1 = require("@nestjs/graphql");
 const passport_1 = require("@nestjs/passport");
 let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
     getRequest(context) {
+        if (context.getType() === 'http') {
+            return context.switchToHttp().getRequest();
+        }
         const ctx = graphql_1.GqlExecutionContext.create(context);
         return ctx.getContext().req;
     }

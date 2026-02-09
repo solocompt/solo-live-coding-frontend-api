@@ -64,8 +64,16 @@ let UsersService = class UsersService {
         });
         return this.usersRepository.save(user);
     }
-    async findAll() {
-        return this.usersRepository.find();
+    async findAll(paginationArgs) {
+        const [items, total] = await this.usersRepository.findAndCount({
+            skip: paginationArgs.skip,
+            take: paginationArgs.take,
+        });
+        return {
+            items,
+            total,
+            hasNextPage: paginationArgs.skip + paginationArgs.take < total,
+        };
     }
     async findOne(id) {
         const user = await this.usersRepository.findOne({ where: { id } });

@@ -16,6 +16,7 @@ const auth_resolver_1 = require("./auth.resolver");
 const users_module_1 = require("../users/users.module");
 const jwt_strategy_1 = require("./strategies/jwt.strategy");
 const refresh_token_strategy_1 = require("./strategies/refresh-token.strategy");
+const auth_controller_1 = require("./auth.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const invalid_token_entity_1 = require("./entities/invalid-token.entity");
 let AuthModule = class AuthModule {
@@ -36,6 +37,7 @@ exports.AuthModule = AuthModule = __decorate([
                 }),
             }),
         ],
+        controllers: [auth_controller_1.AuthController],
         providers: [auth_service_1.AuthService, auth_resolver_1.AuthResolver, jwt_strategy_1.JwtStrategy, refresh_token_strategy_1.RefreshTokenStrategy],
         exports: [auth_service_1.AuthService],
     })

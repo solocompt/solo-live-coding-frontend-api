@@ -37,11 +37,18 @@ let TodosService = class TodosService {
         });
         return this.todosRepository.save(todo);
     }
-    async findAll(user) {
-        return this.todosRepository.find({
+    async findAll(user, paginationArgs) {
+        const [items, total] = await this.todosRepository.findAndCount({
             where: { userId: user.id },
             order: { createdAt: 'DESC' },
+            skip: paginationArgs.skip,
+            take: paginationArgs.take,
         });
+        return {
+            items,
+            total,
+            hasNextPage: paginationArgs.skip + paginationArgs.take < total,
+        };
     }
     async findOne(id, user) {
         const todo = await this.todosRepository.findOne({ where: { id } });

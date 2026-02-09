@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateTodoInput = void 0;
 const create_todo_input_1 = require("./create-todo.input");
 const graphql_1 = require("@nestjs/graphql");
+const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 let UpdateTodoInput = class UpdateTodoInput extends (0, graphql_1.PartialType)(create_todo_input_1.CreateTodoInput) {
     id;
@@ -19,11 +20,13 @@ let UpdateTodoInput = class UpdateTodoInput extends (0, graphql_1.PartialType)(c
 };
 exports.UpdateTodoInput = UpdateTodoInput;
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: 'The id of the todo', example: 'uuid-string' }),
     (0, graphql_1.Field)(() => String, { description: 'The id of the todo' }),
     (0, class_validator_1.IsUUID)('4', { message: 'Id must be a valid UUID' }),
     __metadata("design:type", String)
 ], UpdateTodoInput.prototype, "id", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Mark as completed or not', example: true }),
     (0, graphql_1.Field)(() => Boolean, { nullable: true, description: 'Mark as completed or not' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsBoolean)({ message: 'IsCompleted must be a boolean' }),

@@ -9,7 +9,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RefreshTokenGuard = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
+const graphql_1 = require("@nestjs/graphql");
 let RefreshTokenGuard = class RefreshTokenGuard extends (0, passport_1.AuthGuard)('jwt-refresh') {
+    getRequest(context) {
+        if (context.getType() === 'http') {
+            return context.switchToHttp().getRequest();
+        }
+        const ctx = graphql_1.GqlExecutionContext.create(context);
+        return ctx.getContext().req;
+    }
 };
 exports.RefreshTokenGuard = RefreshTokenGuard;
 exports.RefreshTokenGuard = RefreshTokenGuard = __decorate([

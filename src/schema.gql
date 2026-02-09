@@ -41,12 +41,24 @@ type Mutation {
   updateTodo(updateTodoInput: UpdateTodoInput!): Todo!
 }
 
+type PaginatedTodo {
+  hasNextPage: Boolean!
+  items: [Todo!]
+  total: Int!
+}
+
+type PaginatedUser {
+  hasNextPage: Boolean!
+  items: [User!]
+  total: Int!
+}
+
 type Query {
   me: User!
   todo(id: String!): Todo!
-  todos: [Todo!]!
+  todos(skip: Int! = 0, take: Int! = 10): PaginatedTodo!
   user(id: String!): User!
-  users: [User!]!
+  users(skip: Int! = 0, take: Int! = 10): PaginatedUser!
 }
 
 input SignupInput {

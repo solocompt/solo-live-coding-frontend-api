@@ -18,13 +18,15 @@ const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
 const user_entity_1 = require("./entities/user.entity");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const paginated_user_object_1 = require("./dto/paginated-user.object");
+const pagination_args_1 = require("../common/dto/pagination.args");
 let UsersResolver = class UsersResolver {
     usersService;
     constructor(usersService) {
         this.usersService = usersService;
     }
-    findAll() {
-        return this.usersService.findAll();
+    findAll(paginationArgs) {
+        return this.usersService.findAll(paginationArgs);
     }
     findOne(id) {
         return this.usersService.findOne(id);
@@ -32,10 +34,11 @@ let UsersResolver = class UsersResolver {
 };
 exports.UsersResolver = UsersResolver;
 __decorate([
-    (0, graphql_1.Query)(() => [user_entity_1.User], { name: 'users' }),
+    (0, graphql_1.Query)(() => paginated_user_object_1.PaginatedUser, { name: 'users' }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, graphql_1.Args)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [pagination_args_1.PaginationArgs]),
     __metadata("design:returntype", void 0)
 ], UsersResolver.prototype, "findAll", null);
 __decorate([
