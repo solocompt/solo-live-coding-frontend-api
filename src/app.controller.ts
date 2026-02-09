@@ -1,12 +1,16 @@
-import { Controller, Get, Res } from '@nestjs/common';
-import type { Response } from 'express';
+import { Controller, Get, Res, Req } from '@nestjs/common';
+import type { Response, Request } from 'express';
 import { ApiExcludeController } from '@nestjs/swagger';
 
 @ApiExcludeController()
 @Controller()
 export class AppController {
   @Get()
-  root(@Res() res: Response) {
+  root(@Req() req: Request, @Res() res: Response) {
+    const protocol = req.protocol;
+    const host = req.get('host');
+    const baseUrl = `${protocol}://${host}`;
+
     res.send(`
       <!DOCTYPE html>
       <html lang="en">
@@ -29,16 +33,16 @@ export class AppController {
       </head>
       <body>
         <div class="container">
-          <img src="/public/solo-logo.png" alt="Solo Logo" class="logo">
+          <img src="${baseUrl}/public/solo-logo.png" alt="Solo Logo" class="logo">
           <h1>Solo Live Coding API</h1>
           <p>Select the documentation tool you want to use:</p>
           <div class="cards">
-            <a href="/docs/rest" class="card">
+            <a href="${baseUrl}/docs/rest" class="card">
               <span class="icon">🔌</span>
               <h2>REST API</h2>
               <p>Swagger / OpenAPI Documentation</p>
             </a>
-            <a href="/graphql" class="card">
+            <a href="${baseUrl}/graphql" class="card">
               <span class="icon">⚛️</span>
               <h2>GraphQL API</h2>
               <p>Interactive Playground & Documentation</p>
