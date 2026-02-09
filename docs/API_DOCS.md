@@ -1,171 +1,133 @@
-# Documentacao da API GraphQL
+# API Documentation
 
-Este documento detalha os recursos disponiveis na API GraphQL da Solo Todo App. A API utiliza uma abordagem Code-First e fornece operacoes de leitura (Queries) e escrita (Mutations).
+This document provides detailed information about the Solo Live Coding API, covering both REST and GraphQL interfaces.
 
-## Endpoint
+## Overview
 
-*   **URL Base:** `https://<seu-dominio>/graphql` (ou `http://localhost:3000/graphql` localmente)
-*   **Playground:** Disponivel no mesmo URL para exploracao interativa.
+The API is built with NestJS and provides two primary ways to interact with the data:
 
-## Autenticacao
+1. **REST API**: Standard HTTP endpoints for resource management.
+2. **GraphQL API**: A flexible query language for reading and mutating data.
 
-A maioria das operacoes requer autenticacao via **Bearer Token**.
-Apos o login ou registo, o token JWT (accessToken) deve ser enviado no header da requisicao.
-
-**Header:**
-`Authorization: Bearer <seu_access_token>`
-
-## Tipos Comuns
-
-### Paginacao
-Muitas listas utilizam um sistema de paginacao padrao baseada em offset.
-
-**Argumentos de Paginacao (PaginationArgs):**
-*   `skip` (Int, opcional): Numero de itens a pular (default: 0).
-*   `take` (Int, opcional): Numero de itens a retornar (default: 10, max: 100).
-
-**Resposta Paginada (PaginatedResult):**
-*   `items`: Lista dos objectos solicitados.
-*   `total` (Int): Numero total de itens disponiveis na base de dados.
-*   `hasNextPage` (Boolean): Indica se existem mais paginas para carregar.
+Both interfaces share the same underlying business logic and authentication mechanisms.
 
 ---
 
-## Modulo: Autenticacao (Auth)
+## Authentication
 
-Responsavel pela gestao de acesso e sessoes.
+Authentication is handled via **JWT (JSON Web Tokens)**.
 
-### Mutations
+### Auth Flow
 
-#### 1. Signup (Registo)
-Cria uma nova conta de utilizador.
-
-*   **Nome:** `signup`
-*   **Argumentos (SignupInput):**
-    *   `name` (String, obrigatorio): Nome completo.
-    *   `email` (String, obrigatorio): Email valido (unico).
-    *   `password` (String, obrigatorio): Palavra-passe forte (min 8 caracteres, letras, numeros e simbolos).
-*   **Retorno (AuthResponse):**
-    *   `user`: Objecto do utilizador criado.
-    *   `accessToken`: Token JWT para acesso imediato.
-    *   `refreshToken`: Token para renovacao de sessao.
-
-#### 2. Login
-Autentica um utilizador existente.
-
-*   **Nome:** `login`
-*   **Argumentos (LoginInput):**
-    *   `email` (String, obrigatorio).
-    *   `password` (String, obrigatorio).
-*   **Retorno (AuthResponse):** `user`, `accessToken`, `refreshToken`.
-
-#### 3. Refresh Token
-Renova o access token expirado usando um refresh token valido.
-
-*   **Nome:** `refreshTokens`
-*   **Argumentos:**
-    *   `refreshToken` (String, obrigatorio): O token de refresh recebido no login/signup. (Nota: Deve ser enviado no header Authorization como Bearer tambem).
-*   **Retorno (AuthResponse):** Novos `accessToken` e `refreshToken`.
-
-#### 4. Logout
-Invalida a sessao atual.
-
-*   **Nome:** `logout`
-*   **Retorno:** Boolean (true se sucesso).
+1. **Login/Signup**: User provides credentials and receives an `accessToken` (short-lived) and a `refreshToken` (long-lived).
+2. **Access Protected Resources**: Send the `accessToken` in the `Authorization` header:
+   ```http
+   Authorization: Bearer <your_access_token>
+   ```
+3. **Refresh Token**: When the `accessToken` expires (401 Unauthorized), use the `refreshToken` to obtain a new pair of tokens.
 
 ---
 
-## Modulo: Utilizadores (Users)
+## REST API
 
-Gestao de perfis de utilizador.
+Base URL: `http://localhost:3000` (local) or configured server URL.
 
-### Queries
+### Documentation (Scalar)
 
-#### 1. Listar Utilizadores (users)
-Retorna uma lista paginada de utilizadores. Util para funcionalidade de atribuicao de tarefas.
+Interactive API documentation is available at:
 
-*   **Nome:** `users`
-*   **Argumentos:** `paginationArgs` (skip, take).
-*   **Retorno:** `PaginatedUser` (items: [User], total, hasNextPage).
+- **URL**: `http://localhost:3000/docs`
+- **Features**: Try-it-out, schema exploration, code snippets.
 
-#### 2. Obter Utilizador (user)
-Retorna detalhes de um utilizador especifico.
+### Common Patterns
 
-*   **Nome:** `user`
-*   **Argumentos:** `id` (String, UUID).
-*   **Retorno:** Objecto `User`.
+#### Pagination
 
-### Mutations
+The REST API uses a page-based pagination strategy for large collections (e.g., Todos).
 
-#### 1. Atualizar Utilizador (updateUser)
-Atualiza os dados do utilizador autenticado ou de outro (se tiver permissoes).
+- **Query Parameters**:
+  - `page`: Page number (starts at 1, default: 1)
+  - `limit`: Items per page (max 20, default: 10)
+- **Response Structure**:
+  The API returns the raw list of items for the requested page. Metadata (total count, next page) is currently handled via headers or simplified for this specific implementation.
 
-*   **Nome:** `updateUser`
-*   **Argumentos (UpdateUserInput):**
-    *   `id` (String, obrigatorio).
-    *   `name` (String, opcional).
-    *   `email` (String, opcional).
-*   **Retorno:** Objecto `User` atualizado.
+#### Best Practices implemented
 
-#### 2. Remover Utilizador (removeUser)
-Remove um utilizador do sistema.
+- **URL IDs**: Resource IDs are passed in the URL path (e.g., `/todos/:id`) for updates/deletes.
+- **Body payloads**: Update payloads do NOT require the ID in the body.
+- **Validation**: Strict validation pipes ensure data integrity.
 
-*   **Nome:** `removeUser`
-*   **Argumentos:** `id` (String).
-*   **Retorno:** Objecto `User` removido.
+### Endpoints
+
+#### Authentication
+
+- `POST /auth/signup`: Register a new user.
+- `POST /auth/login`: Login with email/password.
+- `POST /auth/refresh`: Refresh access tokens.
+- `POST /auth/logout`: Logout user.
+- `GET /auth/me`: Get current user profile.
+
+#### Users
+
+- `GET /users`: List users (paginated).
+- `GET /users/:id`: Get user details.
+- `POST /users`: Create user (admin/internal).
+
+#### Todos
+
+- `GET /todos`: List todos (paginated).
+  - params: `?page=1&limit=10`
+- `GET /todos/:id`: Get specific todo.
+- `POST /todos`: Create a todo.
+- `PATCH /todos/:id`: Update a todo.
+- `DELETE /todos/:id`: Delete a todo.
 
 ---
 
-## Modulo: Tarefas (Todos)
+## GraphQL API
 
-O nucleo da aplicacao. Permite gerir tarefas pessoais e atribuidas.
+Endpoint: `http://localhost:3000/graphql`
 
-### Objecto Todo (Campos)
-*   `id` (ID): Identificador unico UUID.
-*   `content` (String): O texto/conteudo da tarefa.
-*   `isCompleted` (Boolean): Estado da tarefa.
-*   `expiresAt` (Date): Data de validade da tarefa (opcional).
-*   `userId` (String): ID do dono da tarefa.
-*   `user` (User): Objecto do utilizador dono (relacao).
-*   `createdAt` (Date): Data de criacao.
-*   `updatedAt` (Date): Data de atualizacao.
+### Playground
 
-### Queries
+Interactive GraphQL Playground is available at the same URL: `http://localhost:3000/graphql`.
+The schema includes detailed descriptions for all types, queries, and mutations.
 
-#### 1. Listar Tarefas (todos)
-Retorna as tarefas do utilizador autenticado.
+### Schema Overview
 
-*   **Nome:** `todos`
-*   **Argumentos:** `paginationArgs` (skip, take).
-*   **Retorno:** `PaginatedTodo` (items: [Todo], total, hasNextPage).
+#### Types
 
-### Mutations
+- **User**: Represents a registered user.
+- **Todo**: Represents a task item.
+- **AuthResponse**: Contains tokens and user info.
+- **PaginatedTodo / PaginatedUser**: Wrapper types for pagination results.
 
-#### 1. Criar Tarefa (createTodo)
-Cria uma nova tarefa. Pode ser para o proprio ou para outro utilizador.
+### Operations
 
-*   **Nome:** `createTodo`
-*   **Argumentos (CreateTodoInput):**
-    *   `content` (String, obrigatorio): Descricao da tarefa.
-    *   `expiresAt` (Date, opcional): Data limite (ISO 8601).
-    *   `userId` (String, opcional): ID do utilizador a quem atribuir a tarefa. Se omitido, atribui ao proprio criador.
-*   **Retorno:** Objecto `Todo` criado.
+#### Queries
 
-#### 2. Atualizar Tarefa (updateTodo)
-Modifica uma tarefa existente.
+- `me`: Get current authenticated user.
+- `users(skip: Int, take: Int)`: Get users with offset-based pagination.
+- `todos(skip: Int, take: Int)`: Get todos with offset-based pagination.
+- `todo(id: String)`: Get a specific todo.
 
-*   **Nome:** `updateTodo`
-*   **Argumentos (UpdateTodoInput):**
-    *   `id` (String, obrigatorio).
-    *   `content` (String, opcional).
-    *   `isCompleted` (Boolean, opcional).
-    *   `expiresAt` (Date, opcional).
-    *   `userId` (String, opcional): Reatribuir a tarefa.
-*   **Retorno:** Objecto `Todo` atualizado.
+#### Mutations
 
-#### 3. Remover Tarefa (removeTodo)
-Apaga uma tarefa definitivamente.
+- `signup(signupInput: ...)`: Register.
+- `login(loginInput: ...)`: Login.
+- `createTodo(createTodoInput: ...)`: Create task.
+- `updateTodo(updateTodoInput: ...)`: Update task.
+- `removeTodo(id: String)`: Delete task.
 
-*   **Nome:** `removeTodo`
-*   **Argumentos:** `id` (String).
-*   **Retorno:** Objecto `Todo` removido.
+### Pagination Difference
+
+Note that GraphQL uses **Offset-based Pagination** (`skip`/`take`) directly in the arguments, whereas the REST API abstracts this into `page`/`limit` query parameters for client convenience.
+
+---
+
+## Error Handling
+
+- **401 Unauthorized**: Invalid or expired token.
+- **400 Bad Request**: Validation failed (check response message).
+- **404 Not Found**: Resource does not exist.
+- **403 Forbidden**: insufficient permissions (e.g. accessing another user's todo).

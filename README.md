@@ -53,6 +53,7 @@ Siga os passos abaixo para colocar a API a correr, seja num ambiente local para 
 
 - Node.js (versão 18 ou superior)
 - npm ou yarn
+- Docker (opcional, para deployment simplificado)
 
 ### Instalação
 
@@ -92,15 +93,38 @@ npm run build
 npm run start:prod
 ```
 
-A aplicação ficará disponível em `http://localhost:3000`.
+### Deployment com Docker
 
-## Documentação da API (GraphQL Playground)
+Para facilitar o deployment em servidores de teste ou produção, o projeto inclui um `Dockerfile` otimizado.
 
-Uma vez que a aplicação esteja a correr, pode aceder ao **GraphQL Playground** para explorar a documentação interativa (Schema) e testar queries/mutations diretamente:
+1. **Construir a Imagem Docker:**
 
-- **URL**: [http://localhost:3000/graphql](http://localhost:3000/graphql)
+   ```bash
+   docker build -t solo-api .
+   ```
 
-Esta é a principal fonte de verdade para os tipos de dados, argumentos necessários e estruturas de retorno.
+2. **Executar o Container:**
+
+   ```bash
+   docker run -d -p 3000:3000 --name solo-api-container solo-api
+   ```
+
+   A API ficará disponível em `http://localhost:3000`.
+   As migrações da base de dados são executadas automaticamente ao iniciar o container.
+
+---
+
+## Documentação da API
+
+Para detalhes completos sobre todos os endpoints, tipos de dados e fluxos de autenticação, consulte o ficheiro:
+👉 **[Documentação Detalhada da API (docs/API_DOCS.md)](docs/API_DOCS.md)**
+
+### Acesso Rápido
+
+- **REST API Docs (Scalar)**: `http://localhost:3000/docs`
+  - Interface moderna para explorar e testar endpoints REST.
+- **GraphQL Playground**: `http://localhost:3000/graphql`
+  - IDE interativo para queries e mutations GraphQL.
 
 ## Testes
 
