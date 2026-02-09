@@ -16,7 +16,7 @@ import { AppDataSource } from '../../data-source';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'sqlite',
-        database: 'src/database/database.sqlite',
+        database: 'data/database.sqlite',
         entities: [__dirname + '/../../**/*.entity{.ts,.js}'],
         synchronize: false,
         logging: false,

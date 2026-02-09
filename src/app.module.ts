@@ -20,7 +20,7 @@ import { TodosModule } from './todos/todos.module';
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       useFactory: (configService: ConfigService) => ({
         type: 'sqlite',
-        database: 'src/database/database.sqlite',
+        database: 'data/database.sqlite',
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: false, // Set to false to use migrations
         logging: true,
