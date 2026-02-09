@@ -117,6 +117,7 @@ Para facilitar o deployment em servidores de teste ou produção, o projeto incl
 ## Documentação da API
 
 Para detalhes completos sobre todos os endpoints, tipos de dados e fluxos de autenticação, consulte os ficheiros:
+
 - 🇺🇸 **[English Documentation (docs/api_docs.en.md)](docs/api_docs.en.md)**
 - 🇵🇹 **[Documentação em Português (docs/api_docs.pt.md)](docs/api_docs.pt.md)**
 
@@ -138,11 +139,11 @@ npm test
 
 ## O Desafio Frontend
 
+Repositório: `https://github.com/solocompt/solo-live-coding-frontend.git`
+
 O candidato deve utilizar esta API para construir uma aplicação web que cubra os seguintes requisitos (detalhes completos no enunciado do desafio):
 
 1. **Autenticação**: Ecrãs de login e registo.
 2. **Dashboard**: Listagem das tarefas do utilizador.
 3. **Gestão**: Criar novas tarefas, marcar como concluídas e apagar.
 4. **Funcionalidades Extra**: Paginação e atribuição de tarefas a outros utilizadores.
-
-Boa sorte!
