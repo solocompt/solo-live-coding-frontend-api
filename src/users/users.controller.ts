@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiResponse } from '@ne
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PaginationArgs } from '../common/dto/pagination.args';
+import { RestPaginationArgs } from '../common/dto/rest-pagination.args';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { IPaginatedType } from '../common/dto/paginated.type';
@@ -24,11 +25,11 @@ export class UsersController {
   @ApiOperation({ summary: 'Get all users with pagination' })
   @Get()
   findAll(
-    @Query() paginationArgs: PaginationArgs,
+    @Query() query: RestPaginationArgs,
   ): Promise<IPaginatedType<User>> {
-    // Default values if not provided (although PaginationArgs usually has defaults or is validated)
-    if (!paginationArgs.skip) paginationArgs.skip = 0;
-    if (!paginationArgs.take) paginationArgs.take = 10;
+    const paginationArgs = new PaginationArgs();
+    paginationArgs.take = query.limit;
+    paginationArgs.skip = (query.page - 1) * query.limit;
     
     return this.usersService.findAll(paginationArgs);
   }

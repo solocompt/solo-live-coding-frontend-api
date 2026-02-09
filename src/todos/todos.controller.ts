@@ -19,6 +19,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { PaginationArgs } from '../common/dto/pagination.args';
+import { RestPaginationArgs } from '../common/dto/rest-pagination.args';
 import { Todo } from './entities/todo.entity';
 import { IPaginatedType } from '../common/dto/paginated.type';
 
@@ -42,11 +43,11 @@ export class TodosController {
   @Get()
   findAll(
     @CurrentUser() user: User,
-    @Query() paginationArgs: PaginationArgs,
+    @Query() query: RestPaginationArgs,
   ): Promise<IPaginatedType<Todo>> {
-    // Default values if not provided
-    if (!paginationArgs.skip) paginationArgs.skip = 0;
-    if (!paginationArgs.take) paginationArgs.take = 10;
+    const paginationArgs = new PaginationArgs();
+    paginationArgs.take = query.limit;
+    paginationArgs.skip = (query.page - 1) * query.limit;
     
     return this.todosService.findAll(user, paginationArgs);
   }
