@@ -116,8 +116,9 @@ Para facilitar o deployment em servidores de teste ou produção, o projeto incl
 
 ## Documentação da API
 
-Para detalhes completos sobre todos os endpoints, tipos de dados e fluxos de autenticação, consulte o ficheiro:
-👉 **[Documentação Detalhada da API (docs/API_DOCS.md)](docs/API_DOCS.md)**
+Para detalhes completos sobre todos os endpoints, tipos de dados e fluxos de autenticação, consulte os ficheiros:
+- 🇺🇸 **[English Documentation (docs/api_docs.en.md)](docs/api_docs.en.md)**
+- 🇵🇹 **[Documentação em Português (docs/api_docs.pt.md)](docs/api_docs.pt.md)**
 
 ### Acesso Rápido
 
