@@ -99,7 +99,7 @@ export class AuthService {
       this.jwtService.signAsync(
         { sub: userId, email },
         {
-          secret: this.configService.get<string>('JWT_SECRET'),
+          secret: this.configService.get<string>('JWT_SECRET') || 'fallback_secret',
           expiresIn: '15m',
         },
       ),

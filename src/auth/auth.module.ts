@@ -21,7 +21,7 @@ import { InvalidToken } from './entities/invalid-token.entity';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
+        secret: configService.get<string>('JWT_SECRET') || 'fallback_secret',
         signOptions: { expiresIn: '15m' }, // Access token short lived
       }),
     }),
