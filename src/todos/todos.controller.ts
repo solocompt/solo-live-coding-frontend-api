@@ -11,7 +11,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { TodosService } from './todos.service';
 import { CreateTodoInput } from './dto/create-todo.input';
 import { UpdateTodoInput } from './dto/update-todo.input';
@@ -20,6 +20,8 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { PaginationArgs } from '../common/dto/pagination.args';
 import { RestPaginationArgs } from '../common/dto/rest-pagination.args';
+import { RestUpdateTodoInput } from './dto/rest-update-todo.input';
+import { PaginatedTodo } from './dto/paginated-todo.dto';
 import { Todo } from './entities/todo.entity';
 import { IPaginatedType } from '../common/dto/paginated.type';
 
@@ -31,6 +33,7 @@ export class TodosController {
   constructor(private readonly todosService: TodosService) {}
 
   @ApiOperation({ summary: 'Create a new todo' })
+  @ApiResponse({ status: 201, description: 'The todo has been successfully created.', type: Todo })
   @Post()
   create(
     @Body() createTodoInput: CreateTodoInput,
@@ -40,6 +43,7 @@ export class TodosController {
   }
 
   @ApiOperation({ summary: 'Get all todos for current user' })
+  @ApiResponse({ status: 200, description: 'Return list of todos', type: PaginatedTodo })
   @Get()
   findAll(
     @CurrentUser() user: User,
@@ -54,6 +58,7 @@ export class TodosController {
 
   @ApiOperation({ summary: 'Get todo by ID' })
   @ApiParam({ name: 'id', description: 'Todo UUID' })
+  @ApiResponse({ status: 200, description: 'Return the todo', type: Todo })
   @Get(':id')
   findOne(
     @Param('id') id: string,
@@ -64,19 +69,23 @@ export class TodosController {
 
   @ApiOperation({ summary: 'Update todo by ID' })
   @ApiParam({ name: 'id', description: 'Todo UUID' })
+  @ApiResponse({ status: 200, description: 'Return the updated todo', type: Todo })
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateTodoInput: UpdateTodoInput,
+    @Body() restUpdateTodoInput: RestUpdateTodoInput,
     @CurrentUser() user: User,
   ): Promise<Todo> {
-    // Ensure the ID in the body matches the URL or just use the ID from URL
+    const updateTodoInput = new UpdateTodoInput();
+    Object.assign(updateTodoInput, restUpdateTodoInput);
     updateTodoInput.id = id;
+    
     return this.todosService.update(id, updateTodoInput, user);
   }
 
   @ApiOperation({ summary: 'Delete todo by ID' })
   @ApiParam({ name: 'id', description: 'Todo UUID' })
+  @ApiResponse({ status: 200, description: 'Return true if deleted', type: Boolean })
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async remove(

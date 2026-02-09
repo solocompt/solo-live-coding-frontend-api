@@ -10,13 +10,13 @@ export interface IPaginatedType<T> {
 export function Paginated<T>(classRef: Type<T>): Type<IPaginatedType<T>> {
   @ObjectType({ isAbstract: true })
   abstract class PaginatedType implements IPaginatedType<T> {
-    @Field(() => [classRef], { nullable: true })
+    @Field(() => [classRef], { nullable: true, description: 'List of items' })
     items: T[];
 
-    @Field(() => Int)
+    @Field(() => Int, { description: 'Total number of items' })
     total: number;
 
-    @Field(() => Boolean)
+    @Field(() => Boolean, { description: 'Whether there is a next page' })
     hasNextPage: boolean;
   }
   return PaginatedType as Type<IPaginatedType<T>>;

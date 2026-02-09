@@ -10,13 +10,13 @@ import { PaginationArgs } from '../common/dto/pagination.args';
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
-  @Query(() => PaginatedUser, { name: 'users' })
+  @Query(() => PaginatedUser, { name: 'users', description: 'Get all users with pagination' })
   @UseGuards(JwtAuthGuard)
   findAll(@Args() paginationArgs: PaginationArgs) {
     return this.usersService.findAll(paginationArgs);
   }
 
-  @Query(() => User, { name: 'user' })
+  @Query(() => User, { name: 'user', description: 'Get user by ID' })
   @UseGuards(JwtAuthGuard)
   findOne(@Args('id', { type: () => String }) id: string) {
     return this.usersService.findOne(id);

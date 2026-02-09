@@ -145,7 +145,7 @@ describe('Todos REST (e2e)', () => {
       .patch(`/todos/${todoId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send({
-        id: todoId,
+        // id: todoId, // Should not be needed for REST
         content: 'Updated Todo',
         isCompleted: true,
       })

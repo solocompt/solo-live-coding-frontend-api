@@ -5,6 +5,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PaginationArgs } from '../common/dto/pagination.args';
 import { RestPaginationArgs } from '../common/dto/rest-pagination.args';
 import { User } from './entities/user.entity';
+import { PaginatedUser } from './dto/paginated-user.dto';
 import { CreateUserInput } from './dto/create-user.input';
 import { IPaginatedType } from '../common/dto/paginated.type';
 
@@ -16,13 +17,14 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({ summary: 'Create a new user (Admin only)' })
-  @ApiResponse({ status: 201, description: 'The user has been successfully created.' })
+  @ApiResponse({ status: 201, description: 'The user has been successfully created.', type: User })
   @Post()
   create(@Body() createUserInput: CreateUserInput): Promise<User> {
     return this.usersService.create(createUserInput);
   }
 
   @ApiOperation({ summary: 'Get all users with pagination' })
+  @ApiResponse({ status: 200, description: 'Return list of users', type: PaginatedUser })
   @Get()
   findAll(
     @Query() query: RestPaginationArgs,
@@ -36,6 +38,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiParam({ name: 'id', description: 'User UUID' })
+  @ApiResponse({ status: 200, description: 'Return the user', type: User })
   @Get(':id')
   findOne(@Param('id') id: string): Promise<User> {
     return this.usersService.findOne(id);

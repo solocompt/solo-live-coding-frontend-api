@@ -16,17 +16,17 @@ import { UpdateUserInput } from '../users/dto/update-user.input';
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @Mutation(() => AuthResponse)
+  @Mutation(() => AuthResponse, { description: 'Login with email and password' })
   login(@Args('loginInput') loginInput: LoginInput) {
     return this.authService.login(loginInput);
   }
 
-  @Mutation(() => AuthResponse)
+  @Mutation(() => AuthResponse, { description: 'Register a new user' })
   signup(@Args('signupInput') signupInput: SignupInput) {
     return this.authService.signup(signupInput);
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => Boolean, { description: 'Logout current user' })
   @UseGuards(JwtAuthGuard)
   async logout(
     @Context() context: { req: Request },
@@ -39,13 +39,13 @@ export class AuthResolver {
     return false;
   }
 
-  @Mutation(() => AuthResponse)
+  @Mutation(() => AuthResponse, { description: 'Refresh access token using refresh token' })
   @UseGuards(RefreshTokenGuard)
   async refreshTokens(@CurrentUser() user: User & { refreshToken: string }) {
     return this.authService.refreshTokens(user.id, user.refreshToken);
   }
 
-  @Mutation(() => User)
+  @Mutation(() => User, { description: 'Update current user profile' })
   @UseGuards(JwtAuthGuard)
   updateProfile(
     @CurrentUser() user: User,
@@ -59,13 +59,13 @@ export class AuthResolver {
     return this.authService.updateProfile(user.id, updateUserInput);
   }
 
-  @Mutation(() => User)
+  @Mutation(() => User, { description: 'Delete current user account' })
   @UseGuards(JwtAuthGuard)
   deleteAccount(@CurrentUser() user: User) {
     return this.authService.deleteAccount(user.id);
   }
 
-  @Query(() => User)
+  @Query(() => User, { description: 'Get current user profile' })
   @UseGuards(JwtAuthGuard)
   me(@CurrentUser() user: User) {
     return user;

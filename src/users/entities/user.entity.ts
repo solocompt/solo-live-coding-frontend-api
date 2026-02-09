@@ -1,4 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import {
   Column,
@@ -15,14 +16,17 @@ import { Todo } from '../../todos/entities/todo.entity';
 export class User {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String, { description: 'User id' })
+  @ApiProperty({ description: 'User id' })
   id: string;
 
   @Column('varchar', { length: 100 })
   @Field(() => String, { description: 'User name' })
+  @ApiProperty({ description: 'User name' })
   name: string;
 
   @Column('varchar', { length: 100, unique: true })
   @Field(() => String, { description: 'User email' })
+  @ApiProperty({ description: 'User email' })
   email: string;
 
   @Column('varchar', { length: 255 })
@@ -37,14 +41,17 @@ export class User {
   currentHashedRefreshToken?: string;
 
   @CreateDateColumn()
-  @Field(() => Date)
+  @Field(() => Date, { description: 'Creation date' })
+  @ApiProperty({ description: 'Creation date' })
   createdAt: Date;
 
   @UpdateDateColumn()
-  @Field(() => Date)
+  @Field(() => Date, { description: 'Last update date' })
+  @ApiProperty({ description: 'Last update date' })
   updatedAt: Date;
 
   @OneToMany(() => Todo, (todo) => todo.user)
-  @Field(() => [Todo], { nullable: true })
+  @Field(() => [Todo], { nullable: true, description: 'List of user todos' })
+  // No @ApiProperty for relation to avoid circular dependency in Swagger UI if not needed or handle carefully
   todos: Todo[];
 }

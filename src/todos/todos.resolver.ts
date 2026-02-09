@@ -14,7 +14,7 @@ import { PaginationArgs } from '../common/dto/pagination.args';
 export class TodosResolver {
   constructor(private readonly todosService: TodosService) {}
 
-  @Query(() => PaginatedTodo, { name: 'todos' })
+  @Query(() => PaginatedTodo, { name: 'todos', description: 'Get all todos with pagination' })
   @UseGuards(JwtAuthGuard)
   async findAll(
     @CurrentUser() user: User,
@@ -23,7 +23,7 @@ export class TodosResolver {
     return this.todosService.findAll(user, paginationArgs);
   }
 
-  @Query(() => Todo, { name: 'todo' })
+  @Query(() => Todo, { name: 'todo', description: 'Get a specific todo by ID' })
   @UseGuards(JwtAuthGuard)
   async findOne(
     @Args('id', { type: () => String }) id: string,
@@ -32,7 +32,7 @@ export class TodosResolver {
     return this.todosService.findOne(id, user);
   }
 
-  @Mutation(() => Todo)
+  @Mutation(() => Todo, { description: 'Create a new todo' })
   @UseGuards(JwtAuthGuard)
   async createTodo(
     @Args('createTodoInput') createTodoInput: CreateTodoInput,
@@ -41,7 +41,7 @@ export class TodosResolver {
     return this.todosService.create(createTodoInput, user);
   }
 
-  @Mutation(() => Todo)
+  @Mutation(() => Todo, { description: 'Update an existing todo' })
   @UseGuards(JwtAuthGuard)
   async updateTodo(
     @Args('updateTodoInput') updateTodoInput: UpdateTodoInput,
@@ -50,7 +50,7 @@ export class TodosResolver {
     return this.todosService.update(updateTodoInput.id, updateTodoInput, user);
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => Boolean, { description: 'Delete a todo by ID' })
   @UseGuards(JwtAuthGuard)
   async removeTodo(
     @Args('id', { type: () => String }) id: string,

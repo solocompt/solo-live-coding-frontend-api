@@ -3,8 +3,13 @@
 # ------------------------------------------------------
 
 type AuthResponse {
+  """JWT access token"""
   accessToken: String!
+
+  """JWT refresh token"""
   refreshToken: String!
+
+  """Authenticated user"""
   user: User!
 }
 
@@ -25,51 +30,109 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 input LoginInput {
+  """User email"""
   email: String!
+
+  """User password"""
   password: String!
 }
 
 type Mutation {
+  """Create a new todo"""
   createTodo(createTodoInput: CreateTodoInput!): Todo!
+
+  """Delete current user account"""
   deleteAccount: User!
+
+  """Login with email and password"""
   login(loginInput: LoginInput!): AuthResponse!
+
+  """Logout current user"""
   logout: Boolean!
+
+  """Refresh access token using refresh token"""
   refreshTokens: AuthResponse!
+
+  """Delete a todo by ID"""
   removeTodo(id: String!): Boolean!
+
+  """Register a new user"""
   signup(signupInput: SignupInput!): AuthResponse!
+
+  """Update current user profile"""
   updateProfile(updateUserInput: UpdateUserInput!): User!
+
+  """Update an existing todo"""
   updateTodo(updateTodoInput: UpdateTodoInput!): Todo!
 }
 
 type PaginatedTodo {
+  """Whether there is a next page"""
   hasNextPage: Boolean!
+
+  """List of items"""
   items: [Todo!]
+
+  """Total number of items"""
   total: Int!
 }
 
 type PaginatedUser {
+  """Whether there is a next page"""
   hasNextPage: Boolean!
+
+  """List of items"""
   items: [User!]
+
+  """Total number of items"""
   total: Int!
 }
 
 type Query {
+  """Get current user profile"""
   me: User!
+
+  """Get a specific todo by ID"""
   todo(id: String!): Todo!
-  todos(skip: Int! = 0, take: Int! = 10): PaginatedTodo!
+
+  """Get all todos with pagination"""
+  todos(
+    """Number of items to skip"""
+    skip: Int! = 0
+
+    """Number of items to take (max 100)"""
+    take: Int! = 10
+  ): PaginatedTodo!
+
+  """Get user by ID"""
   user(id: String!): User!
-  users(skip: Int! = 0, take: Int! = 10): PaginatedUser!
+
+  """Get all users with pagination"""
+  users(
+    """Number of items to skip"""
+    skip: Int! = 0
+
+    """Number of items to take (max 100)"""
+    take: Int! = 10
+  ): PaginatedUser!
 }
 
 input SignupInput {
+  """User email"""
   email: String!
+
+  """User full name"""
   name: String!
+
+  """User password"""
   password: String!
 }
 
 type Todo {
   """Todo content"""
   content: String!
+
+  """Creation date"""
   createdAt: DateTime!
 
   """Expiration date"""
@@ -80,6 +143,8 @@ type Todo {
 
   """Is todo completed"""
   isCompleted: Boolean!
+
+  """Last update date"""
   updatedAt: DateTime!
 
   """Owner of the todo"""
@@ -119,6 +184,7 @@ input UpdateUserInput {
 }
 
 type User {
+  """Creation date"""
   createdAt: DateTime!
 
   """User email"""
@@ -129,6 +195,10 @@ type User {
 
   """User name"""
   name: String!
+
+  """List of user todos"""
   todos: [Todo!]
+
+  """Last update date"""
   updatedAt: DateTime!
 }

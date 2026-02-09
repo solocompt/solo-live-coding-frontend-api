@@ -3,12 +3,12 @@ import { User } from '../../users/entities/user.entity';
 
 @ObjectType()
 export class AuthResponse {
-  @Field()
+  @Field({ description: 'JWT access token' })
   accessToken: string;
 
-  @Field()
+  @Field({ description: 'JWT refresh token' })
   refreshToken: string;
 
-  @Field(() => User)
+  @Field(() => User, { description: 'Authenticated user' })
   user: User;
 }

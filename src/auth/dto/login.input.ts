@@ -5,12 +5,12 @@ import { IsEmail, MinLength } from 'class-validator';
 @InputType()
 export class LoginInput {
   @ApiProperty({ example: 'user@example.com', description: 'User email' })
-  @Field()
+  @Field({ description: 'User email' })
   @IsEmail()
   email: string;
 
   @ApiProperty({ example: 'password123', description: 'User password (min 6 chars)' })
-  @Field()
+  @Field({ description: 'User password' })
   @MinLength(6)
   password: string;
 }
