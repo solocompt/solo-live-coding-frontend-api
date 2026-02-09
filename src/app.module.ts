@@ -32,6 +32,7 @@ import { TodosModule } from './todos/todos.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       playground: true,
+      introspection: true,
     }),
     UsersModule,
     AuthModule,
