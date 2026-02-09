@@ -13,8 +13,5 @@ services:
       # Se necessário, defina JWT_SECRET e outras vars aqui ou no painel do Coolify
       # JWT_SECRET: ${JWT_SECRET} 
     volumes:
-      - sqlite_data:/usr/src/app/src/database
+      - ./src/database/database.sqlite:/usr/src/app/src/database/database.sqlite
     restart: always
-
-volumes:
-  sqlite_data:
